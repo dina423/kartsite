@@ -1,0 +1,118 @@
+{% extends "products.html" %}
+{% block title %}
+productview
+{% endblock title %}
+
+{% block content %}
+<div class=" w-full min-h-[400px] ">
+    <section class="flex flex-row space-x-4 justify-evenly mt-8 w-full " >
+            <div class="mt-8 p-10"><img src="{{detail.product_images.url}}" alt="" height=500 width=300  srcset="">
+                {% if check %}
+                    <i id="like" class="fa-solid fa-heart text-xl hover:text-rose-400 hover:font-semibold"></i>
+                {% else %}
+                    <i id="like" class="fa-regular fa-heart text-xl hover:text-rose-400 hover:font-semibold"></i>
+                {% endif %}
+                </div>
+            <div> 
+                <input id="pid" type="hidden" value={{detail.id}} >  
+                <div class=" text-2xl text-emerald-500">{{detail.name}}</div>
+                <div class="text-lg text-sky-200"> <a href="">visit seller {{detail.seller_name}}</a></div>
+                    <div class=" p-2">{{detail.description}} </div>
+                        <div class="flex flex-col">
+                            <div class="p-10 text-2xl font-semibold">₹ {{detail.selling_price|stringformat:"d"}}<div class=" text-neutral-500 text-lg line-through decoration-2">₹ {{detail.original_price|stringformat:"d"}}</div>
+                            </div>
+                        </div>
+                        <div class="flex flex-row "> 
+                            <div><button class="fa-solid fa-minus" id="min"></button> <input type="text" class="w-10" value="1" id="quan"> <button class="fa-solid fa-plus" id="add"></button> </div>
+                            
+                                {% if detail.quantity == 0  %}
+                                     <div class='bg-[grey] px-2 py-1 text-[25px] text-white rounded-lg'>Out of Stock</div>
+                                     
+                                {% else %}
+                                     <button> <div id="btn" class="text-white ml-5 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-9 py-2.5 text-center me-2 mb-2">Add to cart</div>  </button>
+                                     <input type="hidden" id='pid' value = {{detail.id}}>
+                                {% endif %}
+                            
+                       
+                       </div>
+                   
+                </div>
+               
+          </div>
+    <section>
+</div> 
+<script>
+   document.addEventListener('DOMContentLoaded',()=>{
+   let btn= document.getElementById('btn')
+    let min =document.getElementById('min')
+    let quan = document.getElementById('quan')
+    let add = document.getElementById('add')
+    let pid=document.getElementById('pid').value
+    let qty = 1
+    let like = document.getElementById('like')
+    console.log(qty)
+    min.addEventListener('click',()=>{
+        qty--
+        quan.value=qty
+    })
+    add.addEventListener('click',()=>{
+        qty++
+        quan.value=qty
+    })
+    btn.addEventListener('click',()=>{
+        if(qty > 0){
+            let obj = {
+                'qty':parseInt(quan.value),
+                'pid':pid
+            }
+            console.log(obj)
+            fetch("{% url 'cart' %}",{
+
+                method:'POST',
+                credentials:'same-origin',
+                headers:{
+                    'Accept':'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': '{{csrf_token}}'
+                },
+                body:JSON.stringify(obj)
+                
+            }).then(response=> response.json()).then(data=>{
+                alert(data["status"]);
+            });
+        } else (
+            alert('Enter a valid quantity')
+        )
+
+    })
+
+    like.addEventListener('click',()=>{
+        let obj = {
+            'pid':pid,
+            'isliked':1
+
+        }
+        console.log(obj)
+        fetch("{% url 'wishlist' %}",{
+
+            method:'POST',
+            headers:{
+                'Accept':'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': '{{csrf_token}}'
+            },
+            body:JSON.stringify(obj)
+
+        }).then(response=> response.json()).then(data=>{
+         alert(data["status"]);
+        });
+    }
+    
+    )
+   })
+
+   
+</script>
+
+{% endblock content %}
+

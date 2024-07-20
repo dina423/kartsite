@@ -1,0 +1,32 @@
+{% extends "home.html" %}
+{% block title %}
+
+wishlist
+{% endblock title %}
+
+{% block content %}
+
+<div class="flex flex-col space-y-3 ml-[50px] bg-scroll">
+    {% for x in list %}
+    <div class='flex flex-row space-x-6 items-center h-[150px] group'>
+        <div class=''><img src="{{x.product.product_images.url}}" alt="" class='w-[180px] h-[150px]'></div>
+        <div class="flex flex-col space-x-2 space-y-3 justify-around">
+            <div class='font-semibold group-hover:text-[#2874F0]' >{{x.product.name}}</div>
+            <div class='text-[#adacac] underline decoration-1 text-[13px]'>seller: {{x.product.seller}}</div>
+            {% if x.product.quantity <= 0 %}
+                <div>Out Of Stock</div>
+            {% endif %}
+            <div class="flex flex-row space-x-3 ">  
+                <div class='font-semibold '><i class="fa-solid fa-indian-rupee-sign pl-1 text-[13.5px] mr-[2px]"></i></i>{{x.product.selling_price | stringformat:'d'}}</div>
+                <div class='line-through decoration-1 text-[#adacac]'><i class="fa-solid fa-indian-rupee-sign mr-[2px] text-[13.5px]"></i>{{x.product.original_price  | stringformat:'d'}}</div>
+                <div class='text-[#388E3C] font-semibold'>{{x.product.offer}}% off</div>
+                <div id='amount'>{{x.total_price  | stringformat:'d'}}</div>
+            </div>   
+        </div>
+        <div class='ml-[20px]'><a href="{% url 'removewishlist' x.id  %}" ><i class='fa-solid fa-trash'></i></a></div>
+    </div>
+{% endfor %}
+</div>
+
+{% endblock content %}
+
